@@ -1,0 +1,31 @@
+---
+import { SITE } from '../data/site';
+interface Props { accueil?: boolean }
+const { accueil = false } = Astro.props;
+const p = accueil ? '' : '/';
+const liens = [
+  ['Vitrine', `${p}#vitrine`],
+  ['Carte', `${p}#carte`],
+  ['Histoire', `${p}#histoire`],
+  ['Commander', `${p}#commander`],
+  ['Horaires & accès', `${p}#infos`],
+];
+---
+<header class="bg-carrelage border-b-2 border-encre sticky top-0 z-40">
+  <div class="conteneur flex items-center justify-between gap-4 h-16 md:h-[72px]">
+    <a href="/" class="flex items-baseline gap-2.5 no-underline min-h-11 py-2" aria-label="Chez Lam, accueil">
+      <span class="font-titre text-[1.6rem] md:text-[1.85rem] leading-none text-petrole" translate="no">Chez Lam</span>
+      <span class="hidden sm:inline text-[0.82rem] text-gris leading-none">traiteur asiatique, Montmorency</span>
+    </a>
+    <nav aria-label="Sections" class="hidden lg:block">
+      <ul class="flex items-center gap-1">
+        {liens.map(([t, h]) => (
+          <li><a href={h} class="inline-flex items-center min-h-11 px-3 text-[0.97rem] font-medium hover:text-brique">{t}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <a href={`tel:${SITE.telLien}`} class="btn btn-tel !min-h-11 !py-2 !px-3.5 text-[0.95rem] tabular-nums">
+      <span class="sr-only">Appeler le </span>{SITE.telAffiche}
+    </a>
+  </div>
+</header>

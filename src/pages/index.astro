@@ -1,0 +1,310 @@
+---
+import Base from '../layouts/Base.astro';
+import Plaque from '../components/Plaque.astro';
+import Vitrine from '../components/Vitrine.astro';
+import Journee from '../components/Journee.astro';
+import CarteFacade from '../components/CarteFacade.astro';
+import AConfirmer from '../components/AConfirmer.astro';
+import { SITE, SERVICES, JOURS, AVIS, fmtHeure } from '../data/site';
+import carte from '../data/carte.json';
+
+const [midi, soir] = SERVICES;
+const horaire = `${fmtHeure(midi.ouvre)}–${fmtHeure(midi.ferme)} et ${fmtHeure(soir.ouvre)}–${fmtHeure(soir.ferme)}`;
+const [avisVitrine, avisTout, avisSamoussas, avis20ans, avisBobun] = AVIS;
+const tel = `tel:${SITE.telLien}`;
+
+// Questions fréquentes : uniquement des réponses vérifiées (la livraison reste à confirmer, hors JSON-LD).
+const faq = [
+  ['Le poulet est-il halal chez Chez Lam ?', 'Oui, le poulet servi chez Chez Lam à Montmorency est halal. Les autres viandes ne le sont pas.'],
+  ['Quels sont les horaires de Chez Lam ?', `Du lundi au samedi, ${horaire}. La boutique est fermée entre ${fmtHeure(midi.ferme)} et ${fmtHeure(soir.ouvre)}, et le dimanche.`],
+  ['Peut-on payer en titres-restaurant ?', 'Oui : titres-restaurant (Pluxee…), carte bancaire et paiement sans contact sont acceptés.'],
+  ['Peut-on manger sur place ?', 'Oui, il y a une petite salle avec service à table. Tout est aussi vendu à emporter.'],
+  ['Comment commander à emporter ?', `Par téléphone au ${SITE.telAffiche}, pendant le service du midi ou du soir, puis retrait au ${SITE.adresse.rue} à ${SITE.adresse.ville}.`],
+];
+const jsonFaq = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(([q, r]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: r } })),
+};
+
+const frise = [
+  {
+    quand: 'Il y a 37 ans',
+    texte: 'La famille arrive dans la région, avec sa cuisine.',
+    note: 'année',
+    photo: 'Photo d’album : la famille à son arrivée',
+    teinte: '#d9c79b',
+  },
+  {
+    quand: 'Depuis 20 ans',
+    texte: 'Des clients fidèles depuis vingt ans.',
+    citation: avis20ans,
+    photo: 'Photo d’album : le comptoir, les premières années',
+    teinte: '#b9cbc8',
+  },
+  {
+    quand: String(SITE.creation),
+    texte: 'Création de l’EURL Chez Lam au 85 rue des Chesneaux.',
+    photo: 'Photo d’album : la devanture rue des Chesneaux',
+    teinte: '#e2b9a6',
+  },
+  {
+    quand: 'Aujourd’hui',
+    texte: `Midi et soir, six jours sur sept. ${SITE.note}/5 sur ${SITE.nbAvis} avis Google.`,
+    photo: 'Photo récente : la famille derrière la vitrine',
+    teinte: '#ecd38a',
+  },
+];
+---
+<Base
+  accueil
+  title="Chez Lam, traiteur asiatique à Montmorency | Bo bun, nems"
+  description="Traiteur asiatique familial depuis 37 ans, 85 rue des Chesneaux à Montmorency : plats cuisinés sur place, à emporter midi et soir. Poulet halal. 01 39 64 27 86."
+  jsonld={[jsonFaq]}
+>
+  <!-- 1. Accueil -->
+  <section class="carrelage border-b-2 border-encre">
+    <div class="conteneur grid gap-10 lg:grid-cols-[1.45fr_1fr] lg:items-center pt-10 pb-12 md:pt-16 md:pb-16">
+      <div>
+        <h1 class="text-petrole text-[2.55rem] sm:text-[3.4rem] lg:text-[3.9rem] max-w-[17ch]">Le traiteur asiatique de Montmorency, en famille depuis 37 ans</h1>
+        <p class="mt-6 max-w-[52ch] text-[1.1rem] md:text-[1.2rem]">Cuisine chinoise, vietnamienne et thaïe préparée sur place, rue des Chesneaux. À emporter midi et soir, ou à table dans la petite salle.</p>
+        <p class="mt-6 inline-flex flex-wrap items-baseline gap-x-2 bg-white border-2 border-encre rounded-[4px] px-3.5 py-2">
+          <span class="font-titre text-[1.6rem] leading-none text-brique">{SITE.note}/5</span>
+          <span class="text-[0.98rem]">sur {SITE.nbAvis} avis Google</span>
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href={tel} class="btn btn-tel text-[1.05rem]">Commander par téléphone</a>
+          <a href="#vitrine" class="btn btn-ligne text-[1.05rem]">Voir la vitrine</a>
+        </div>
+      </div>
+      <Plaque />
+    </div>
+  </section>
+
+  <!-- 2. La vitrine du jour -->
+  <section id="vitrine" class="py-14 md:py-20 bg-carrelage">
+    <div class="conteneur">
+      <div class="grid gap-4 md:grid-cols-[1fr_1fr] md:items-end mb-8">
+        <h2 class="text-petrole text-[2.2rem] md:text-[3rem]">La vitrine du jour</h2>
+        <p class="max-w-[48ch] md:justify-self-end">Les plats que nos clients citent le plus souvent, en barquettes. Le choix change selon les jours : appelez pour savoir ce qui reste.</p>
+      </div>
+      <Vitrine />
+      <p class="mt-5 text-[0.95rem] text-gris">Le poulet est halal. Les autres viandes ne le sont pas. <AConfirmer quoi="formulation halal" /></p>
+    </div>
+  </section>
+
+  <!-- 3. La carte complète -->
+  <section id="carte" class="py-14 md:py-20 bg-white border-y-2 border-encre">
+    <div class="conteneur">
+      <div class="grid gap-4 md:grid-cols-[1fr_1fr] md:items-end">
+        <h2 class="text-petrole text-[2.2rem] md:text-[3rem]">La carte</h2>
+        <p class="max-w-[48ch] md:justify-self-end">Chinois, vietnamien, thaï. Les plats ci-dessous sont ceux que nos clients citent ; la carte complète et les prix sont à venir. <AConfirmer quoi="carte complète et prix" /></p>
+      </div>
+      <div class="mt-10 columns-1 md:columns-2 lg:columns-3 gap-x-12">
+        {carte.rubriques.map((r) => (
+          <section class="break-inside-avoid mb-9">
+            <h3 class="text-[1.55rem] text-encre pb-2 border-b-2 border-moutarde">{r.titre}</h3>
+            <ul class="mt-2">
+              {r.plats.map((p) => (
+                <li class="py-2.5 border-b border-dashed border-joint">
+                  <p class="flex items-baseline gap-2">
+                    <span class="font-medium">{p.nom}</span>
+                    <span class="flex-1 border-b-2 border-dotted border-[#b9bfbf] translate-y-[-4px]" aria-hidden="true"></span>
+                    <span class="text-brique font-semibold tabular-nums">{p.prix ?? '… €'}</span>
+                  </p>
+                  {'note' in p && p.note && <p class="text-[0.88rem] text-gris mt-0.5">{p.note.replace(' [À CONFIRMER]', '')} {p.note.includes('[À CONFIRMER]') && <AConfirmer />}</p>}
+                  {/poulet/i.test(p.nom) && <p class="text-[0.85rem] text-petrole font-semibold mt-0.5">Poulet halal</p>}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. L'histoire : frise 37 ans -->
+  <section id="histoire" class="bg-petrole text-white py-14 md:py-20">
+    <div class="conteneur">
+      <div class="grid gap-8 lg:grid-cols-[auto_1fr] lg:items-end">
+        <p class="font-titre text-moutarde-vif leading-[0.8] text-[7.5rem] md:text-[11rem]" aria-hidden="true">37<span class="text-[0.3em] text-white ml-3 align-top">ans</span></p>
+        <div class="max-w-[58ch]">
+          <h2 class="text-[2rem] md:text-[2.6rem]">Une cuisine de famille, dans la région depuis 37 ans</h2>
+          <p class="mt-4 text-[#d9e6e8]">Tout est cuisiné sur place. Les clients le disent mieux que nous :</p>
+          <blockquote class="mt-4 border-l-4 border-moutarde pl-4">
+            <p class="font-titre text-[1.3rem] md:text-[1.45rem] leading-snug">« 37 ans que tu as débarqué avec ta cuisine et ta famille dans cette région »</p>
+            <footer class="mt-2 text-[0.9rem] text-[#b9d0d3]">Un client, avis Google</footer>
+          </blockquote>
+          <p class="mt-5 text-[#d9e6e8]">
+            {SITE.patron.confirme
+              ? <>Derrière le comptoir, {SITE.patron.prenom}, le patron.</>
+              : <>Derrière le comptoir, le patron. <AConfirmer quoi="comment le patron souhaite être présenté" /></>}
+          </p>
+        </div>
+      </div>
+
+      <ol class="frise mt-14 grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4 lg:gap-7">
+        {frise.map((e, i) => (
+          <li class="relative">
+            <figure class="photo-album" style={`--teinte:${e.teinte};--penche:${[-2, 1.5, -1, 2][i]}deg`}>
+              <div class="photo-attendue aspect-[4/5]" style="background:var(--teinte)">
+                <figcaption class="text-encre !text-[0.78rem] md:!text-[0.85rem]">{e.photo} <span class="block mt-1 text-[0.8rem] opacity-80">À fournir par la famille</span></figcaption>
+              </div>
+              <span class="coin c1" aria-hidden="true"></span><span class="coin c2" aria-hidden="true"></span>
+              <span class="coin c3" aria-hidden="true"></span><span class="coin c4" aria-hidden="true"></span>
+            </figure>
+            <p class="mt-6 font-titre text-moutarde-vif text-[1.3rem] md:text-[1.6rem]">{e.quand}</p>
+            {e.note && <p class="mt-1 text-[0.95rem]"><AConfirmer quoi={e.note} /></p>}
+            <p class="mt-1.5 text-[0.95rem] md:text-[1rem] text-[#e4eef0] max-w-[32ch]">{e.texte}</p>
+            {e.citation && <p class="mt-2 text-[0.92rem] italic text-[#b9d0d3]">« {e.citation} » <span class="not-italic">Avis Google</span></p>}
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- 5. Commander -->
+  <section id="commander" class="carrelage py-14 md:py-20 border-b-2 border-encre">
+    <div class="conteneur grid gap-10 lg:grid-cols-[1.1fr_1fr]">
+      <div>
+        <h2 class="text-petrole text-[2.2rem] md:text-[3rem]">Commander à emporter</h2>
+        <p class="mt-4 max-w-[44ch] text-[1.1rem]">Un coup de fil pendant le service, vous passez prendre votre commande au 85 rue des Chesneaux.</p>
+        <a href={tel} class="numero mt-8 inline-block font-titre text-encre leading-none no-underline tabular-nums text-[2.7rem] sm:text-[3.8rem] lg:text-[4.6rem] border-b-[6px] border-moutarde hover:border-brique">{SITE.telAffiche}</a>
+        <p class="mt-4 text-[0.95rem] text-gris">Bouillon pour fondue chinoise : sur commande. <AConfirmer quoi="délai et quantités" /></p>
+      </div>
+      <dl class="bg-white border-2 border-encre rounded-[4px] divide-y-2 divide-joint self-start">
+        <div class="p-4 md:p-5 grid grid-cols-[8.5rem_1fr] gap-3" data-service="midi">
+          <dt class="font-semibold">Retrait midi</dt><dd class="tabular-nums">{fmtHeure(midi.ouvre)} – {fmtHeure(midi.ferme)}</dd>
+        </div>
+        <div class="p-4 md:p-5 grid grid-cols-[8.5rem_1fr] gap-3 bg-[#f6e6e1]">
+          <dt class="font-semibold text-brique">Coupure</dt><dd><span class="tabular-nums">{fmtHeure(midi.ferme)} – {fmtHeure(soir.ouvre)}</span> : boutique fermée.</dd>
+        </div>
+        <div class="p-4 md:p-5 grid grid-cols-[8.5rem_1fr] gap-3" data-service="soir">
+          <dt class="font-semibold">Retrait soir</dt><dd class="tabular-nums">{fmtHeure(soir.ouvre)} – {fmtHeure(soir.ferme)}</dd>
+        </div>
+        <div class="p-4 md:p-5 grid grid-cols-[8.5rem_1fr] gap-3">
+          <dt class="font-semibold">Paiement</dt><dd>Carte bancaire, sans contact, <strong class="font-semibold">titres-restaurant acceptés</strong> (Pluxee…)</dd>
+        </div>
+        <div class="p-4 md:p-5 grid grid-cols-[8.5rem_1fr] gap-3">
+          <dt class="font-semibold">Livraison</dt><dd><AConfirmer quoi="zone, jours, minimum de commande" /></dd>
+        </div>
+        <div class="p-4 md:p-5 grid grid-cols-[8.5rem_1fr] gap-3">
+          <dt class="font-semibold">Sur place</dt><dd>Petite salle, service à table.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- 6. Avis -->
+  <section id="avis" class="py-14 md:py-20 bg-moutarde text-encre border-b-2 border-encre">
+    <div class="conteneur">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <h2 class="text-[2.2rem] md:text-[3rem]">Ce qu’en disent les clients</h2>
+        <p class="flex items-baseline gap-3">
+          <span class="font-titre text-[3.6rem] leading-none">{SITE.note}</span>
+          <span class="text-[1rem] leading-snug">/5 sur {SITE.nbAvis} avis Google<br />TripAdvisor {SITE.noteTripadvisor}/5</span>
+        </p>
+      </div>
+      <figure class="mt-10 max-w-[30ch] md:max-w-[34ch]">
+        <blockquote class="font-titre text-[1.9rem] md:text-[2.7rem] leading-[1.15]">« {avisSamoussas} »</blockquote>
+        <figcaption class="mt-3 text-[0.95rem] font-medium">Avis Google</figcaption>
+      </figure>
+      <ul class="mt-12 grid gap-x-10 gap-y-8 md:grid-cols-2 border-t-2 border-encre pt-8">
+        {[avisVitrine, avisTout, avis20ans, avisBobun].map((a) => (
+          <li>
+            <blockquote class="text-[1.08rem] max-w-[56ch]">« {a} »</blockquote>
+            <p class="mt-2 text-[0.9rem] font-medium">Avis Google</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7. Infos pratiques -->
+  <section id="infos" class="py-14 md:py-20 bg-carrelage">
+    <div class="conteneur">
+      <h2 class="text-petrole text-[2.2rem] md:text-[3rem]">Horaires et accès</h2>
+      <p class="mt-4 max-w-[60ch] text-[1.1rem]">Deux services par jour, avec une <strong class="font-semibold text-brique">coupure de {fmtHeure(midi.ferme)} à {fmtHeure(soir.ouvre)}</strong> : la boutique est fermée l’après-midi.</p>
+
+      <div class="mt-10 max-w-[56rem]">
+        <Journee />
+      </div>
+
+      <div class="mt-12 grid gap-10 lg:grid-cols-[1fr_1.25fr]">
+        <div>
+          <table class="w-full text-left border-2 border-encre bg-white">
+            <caption class="sr-only">Horaires d’ouverture de Chez Lam</caption>
+            <thead class="bg-petrole text-white">
+              <tr><th scope="col" class="p-3 font-semibold">Jour</th><th scope="col" class="p-3 font-semibold">Midi</th><th scope="col" class="p-3 font-semibold">Soir</th></tr>
+            </thead>
+            <tbody>
+              {JOURS.map((j) => (
+                <tr data-jour={j.jour} class="jour border-t border-joint">
+                  <th scope="row" class="p-3 font-medium">{j.nom}</th>
+                  {j.ouvert
+                    ? <><td class="p-3 tabular-nums">{fmtHeure(midi.ouvre)}–{fmtHeure(midi.ferme)}</td><td class="p-3 tabular-nums">{fmtHeure(soir.ouvre)}–{fmtHeure(soir.ferme)}</td></>
+                    : <td colspan="2" class="p-3 text-brique font-semibold">Fermé</td>}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <address class="not-italic mt-8 text-[1.05rem] leading-relaxed">
+            <span class="font-titre text-[1.5rem] text-petrole block">{SITE.adresse.rue}</span>
+            {SITE.adresse.cp} {SITE.adresse.ville}<br />
+            <a href={tel} class="lien inline-flex items-center min-h-11">{SITE.telAffiche}</a>
+          </address>
+          <p class="mt-3 text-[0.98rem] max-w-[48ch]">À quelques minutes de {SITE.voisines.slice(0, -1).join(', ')} et {SITE.voisines.at(-1)}.</p>
+          <p class="mt-3 text-[0.98rem]">Stationnement : <AConfirmer quoi="où se garer" /></p>
+        </div>
+        <CarteFacade />
+      </div>
+    </div>
+  </section>
+
+  <!-- Questions fréquentes -->
+  <section id="questions" class="py-14 md:py-16 bg-white border-t-2 border-encre">
+    <div class="conteneur grid gap-8 lg:grid-cols-[1fr_1.6fr]">
+      <h2 class="text-petrole text-[2rem] md:text-[2.5rem]">Questions fréquentes</h2>
+      <div class="divide-y-2 divide-joint border-y-2 border-joint">
+        {faq.map(([q, r]) => (
+          <details class="group">
+            <summary class="flex items-center justify-between gap-4 min-h-14 py-3 cursor-pointer font-semibold text-[1.05rem] list-none">
+              {q}
+              <span class="plus font-titre text-[1.6rem] text-brique leading-none transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+            </summary>
+            <p class="pb-4 max-w-[62ch]">{r}{q.startsWith('Le poulet') && <> <AConfirmer quoi="formulation halal" /></>}</p>
+          </details>
+        ))}
+        <details class="group">
+          <summary class="flex items-center justify-between gap-4 min-h-14 py-3 cursor-pointer font-semibold text-[1.05rem] list-none">
+            Chez Lam livre-t-il à domicile ?
+            <span class="plus font-titre text-[1.6rem] text-brique leading-none transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+          </summary>
+          <p class="pb-4">Une livraison existe. <AConfirmer quoi="zone, jours, conditions" /></p>
+        </details>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  summary::-webkit-details-marker { display: none; }
+  .jour[aria-current] { background: var(--color-moutarde-clair); }
+  .jour[aria-current] th::after { content: ' (aujourd’hui)'; font-weight: 400; font-size: 0.85em; }
+  [data-service][aria-current] { background: var(--color-moutarde-clair); }
+
+  .photo-album {
+    position: relative;
+    margin: 0;
+    padding: 10px 10px 10px;
+    background: #fbfaf6;
+    transform: rotate(var(--penche));
+  }
+  .photo-attendue { border: 1px solid rgb(0 0 0 / 0.15); }
+  /* Coins photo collés */
+  .coin { position: absolute; width: 30px; height: 30px; background: var(--color-encre); }
+  .c1 { top: -4px; left: -4px; clip-path: polygon(0 0, 100% 0, 0 100%); }
+  .c2 { top: -4px; right: -4px; clip-path: polygon(0 0, 100% 0, 100% 100%); }
+  .c3 { bottom: -4px; right: -4px; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+  .c4 { bottom: -4px; left: -4px; clip-path: polygon(0 0, 100% 100%, 0 100%); }
+</style>

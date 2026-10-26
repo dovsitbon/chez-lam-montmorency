@@ -1,0 +1,7 @@
+---
+import { SITE } from '../data/site';
+---
+<div class="md:hidden fixed inset-x-0 bottom-0 z-40 bg-petrole border-t-2 border-encre px-3 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] grid grid-cols-[1fr_auto] gap-2.5">
+  <a href={`tel:${SITE.telLien}`} class="btn btn-tel !border-moutarde">Appeler, {SITE.telAffiche}</a>
+  <a href={SITE.itineraire} class="btn !bg-transparent !text-white !border-white/70" target="_blank" rel="noopener">Itinéraire</a>
+</div>

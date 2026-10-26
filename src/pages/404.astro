@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../data/site';
+---
+<Base title="Page introuvable | Chez Lam, Montmorency" description="Cette page n’existe pas. Retrouvez la vitrine du jour et les horaires de Chez Lam, traiteur asiatique à Montmorency." noindex>
+  <section class="carrelage flex-1">
+    <div class="conteneur py-16 md:py-24 grid gap-10 md:grid-cols-[1fr_auto] md:items-center">
+      <div>
+        <h1 class="text-petrole text-[2.6rem] md:text-[3.8rem] max-w-[16ch]">Cette barquette-là n’est pas en vitrine</h1>
+        <p class="mt-5 max-w-[46ch] text-[1.1rem]">La page demandée n’existe pas ou a changé d’adresse. Revenez à l’accueil, ou appelez-nous directement.</p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="/" class="btn btn-petrole">Revenir à l’accueil</a>
+          <a href="/#vitrine" class="btn btn-ligne">Voir la vitrine du jour</a>
+          <a href={`tel:${SITE.telLien}`} class="btn btn-tel">{SITE.telAffiche}</a>
+        </div>
+      </div>
+      <div class="etiq404" aria-hidden="true">
+        <p>404</p>
+        <p class="p">… €</p>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .etiq404 { justify-self: start; background: var(--color-moutarde-clair); border: 2px solid #b8891a; padding: 1rem 2rem 1.2rem; transform: rotate(-3deg); font-family: var(--font-main); line-height: 1; }
+  .etiq404 p { font-size: 5rem; font-weight: 700; color: var(--color-encre); }
+  .etiq404 .p { font-size: 2.6rem; color: var(--color-brique); margin-top: .3rem; }
+</style>

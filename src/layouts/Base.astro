@@ -1,0 +1,156 @@
+---
+import '../styles/global.css';
+import Entete from '../components/Entete.astro';
+import Pied from '../components/Pied.astro';
+import BarreMobile from '../components/BarreMobile.astro';
+import { SITE, SERVICES, JOURS } from '../data/site';
+import carte from '../data/carte.json';
+import policeTitre from '@fontsource/young-serif/files/young-serif-latin-400-normal.woff2?url';
+import policeTexte from '@fontsource-variable/schibsted-grotesk/files/schibsted-grotesk-latin-wght-normal.woff2?url';
+
+interface Props {
+  title: string;
+  description: string;
+  jsonld?: object[];
+  noindex?: boolean;
+  accueil?: boolean;
+}
+const { title, description, jsonld = [], noindex = false, accueil = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const og = new URL('/og.png', Astro.site);
+const joursOuverts = JOURS.filter((j) => j.ouvert).map((j) => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][j.jour]);
+
+const restaurant = {
+  '@context': 'https://schema.org',
+  '@type': ['Restaurant', 'FoodEstablishment'],
+  '@id': new URL('/#chez-lam', Astro.site).href,
+  name: SITE.nom,
+  legalName: SITE.societe,
+  foundingDate: String(SITE.creation),
+  description: `Traiteur asiatique familial à ${SITE.adresse.ville} : plats chinois, vietnamiens et thaïs cuisinés sur place, petite salle, vente à emporter. Poulet halal.`,
+  url: new URL('/', Astro.site).href,
+  telephone: SITE.telLien,
+  image: og.href,
+  servesCuisine: ['Chinese', 'Vietnamese', 'Thai'],
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: SITE.adresse.rue,
+    postalCode: SITE.adresse.cp,
+    addressLocality: SITE.adresse.ville,
+    addressRegion: "Val-d'Oise",
+    addressCountry: SITE.adresse.pays,
+  },
+  areaServed: [SITE.adresse.ville, ...SITE.voisines].map((n) => ({ '@type': 'City', name: n })),
+  openingHoursSpecification: SERVICES.map((s) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: joursOuverts,
+    opens: s.ouvre,
+    closes: s.ferme,
+  })),
+  paymentAccepted: SITE.paiements.join(', '),
+  acceptsReservations: false,
+  hasMenu: {
+    '@type': 'Menu',
+    url: new URL('/#carte', Astro.site).href,
+    hasMenuSection: carte.rubriques.map((r) => ({
+      '@type': 'MenuSection',
+      name: r.titre,
+      hasMenuItem: r.plats.map((p) => ({ '@type': 'MenuItem', name: p.nom })),
+    })),
+  },
+  amenityFeature: [
+    { '@type': 'LocationFeatureSpecification', name: 'Service à table', value: true },
+    { '@type': 'LocationFeatureSpecification', name: 'Vente à emporter', value: true },
+    { '@type': 'LocationFeatureSpecification', name: 'Poulet halal', value: true },
+  ],
+  aggregateRating: { '@type': 'AggregateRating', ratingValue: SITE.noteNum, bestRating: 5, ratingCount: SITE.nbAvis },
+  ...(SITE.sameAs.length ? { sameAs: SITE.sameAs } : {}),
+};
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="preload" href={policeTitre} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={policeTexte} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#11505c" />
+    <meta property="og:type" content="restaurant" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="Chez Lam, Montmorency" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={og} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Chez Lam, traiteur asiatique au 85 rue des Chesneaux à Montmorency" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(restaurant)} />
+    {jsonld.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+  </head>
+  <body class="min-h-dvh flex flex-col pb-[76px] md:pb-0">
+    <a href="#contenu" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-carrelage focus:px-4 focus:py-3 focus:font-semibold">Aller au contenu</a>
+    <Entete accueil={accueil} />
+    <main id="contenu" class="flex-1">
+      <slot />
+    </main>
+    <Pied />
+    <BarreMobile />
+    <script is:inline define:vars={{ services: SERVICES, jours: JOURS }}>
+      // Statut midi / soir / coupure, calculé à l'heure de Paris.
+      (function () {
+        try {
+          var parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Paris', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+          var get = function (t) { return (parts.find(function (p) { return p.type === t; }) || {}).value; };
+          var j = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[get('weekday')];
+          var min = parseInt(get('hour'), 10) * 60 + parseInt(get('minute'), 10);
+          var m = function (h) { var a = h.split(':'); return +a[0] * 60 + +a[1]; };
+          var f = function (h) { return h.replace(':', 'h'); };
+          var midi = services[0], soir = services[1];
+          var estOuvert = function (d) { var x = jours.find(function (k) { return k.jour === d; }); return x && x.ouvert; };
+          var prochain = function () {
+            for (var i = 1; i <= 7; i++) {
+              var d = (j + i) % 7;
+              if (estOuvert(d)) return (i === 1 ? 'demain' : jours.find(function (k) { return k.jour === d; }).nom.toLowerCase()) + ' à ' + f(midi.ouvre);
+            }
+          };
+          var etat, titre, detail, service = null;
+          if (estOuvert(j) && min >= m(midi.ouvre) && min < m(midi.ferme)) {
+            etat = 'ouvert'; service = 'midi'; titre = 'Ouvert, service du midi'; detail = 'Jusqu’à ' + f(midi.ferme) + '. Commandez par téléphone.';
+          } else if (estOuvert(j) && min >= m(soir.ouvre) && min < m(soir.ferme)) {
+            etat = 'ouvert'; service = 'soir'; titre = 'Ouvert, service du soir'; detail = 'Jusqu’à ' + f(soir.ferme) + '. Commandez par téléphone.';
+          } else if (estOuvert(j) && min >= m(midi.ferme) && min < m(soir.ouvre)) {
+            etat = 'coupure'; titre = 'Fermé pour la coupure'; detail = 'On rouvre à ' + f(soir.ouvre) + ' pour le soir.';
+          } else if (estOuvert(j) && min < m(midi.ouvre)) {
+            etat = 'ferme'; titre = 'Fermé pour le moment'; detail = 'Ouverture à ' + f(midi.ouvre) + ' ce matin.';
+          } else {
+            etat = 'ferme'; titre = 'Fermé'; detail = 'Réouverture ' + prochain() + '.';
+          }
+          document.querySelectorAll('[data-statut]').forEach(function (el) {
+            el.dataset.etat = etat;
+            var t = el.querySelector('[data-statut-titre]'); if (t) t.textContent = titre;
+            var d = el.querySelector('[data-statut-detail]'); if (d) d.textContent = detail;
+          });
+          if (service) document.querySelectorAll('[data-service="' + service + '"]').forEach(function (el) { el.setAttribute('aria-current', 'time'); });
+          document.querySelectorAll('[data-jour="' + j + '"]').forEach(function (el) { el.setAttribute('aria-current', 'date'); });
+          // Repère « maintenant » sur la frise de la journée (10h → 21h).
+          var debut = 600, fin = 1260;
+          if (estOuvert(j) && min >= debut && min <= fin) {
+            document.querySelectorAll('[data-maintenant]').forEach(function (el) {
+              el.style.left = ((min - debut) / (fin - debut)) * 100 + '%';
+              el.hidden = false;
+            });
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </body>
+</html>

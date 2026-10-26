@@ -1,0 +1,6 @@
+---
+// Marqueur visible des informations manquantes (voir A_COMPLETER.md).
+interface Props { quoi?: string }
+const { quoi } = Astro.props;
+---
+<span class="a-confirmer">[À CONFIRMER{quoi ? ` : ${quoi}` : ''}]</span>

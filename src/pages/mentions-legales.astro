@@ -1,0 +1,23 @@
+---
+import PageTexte from '../components/PageTexte.astro';
+import AConfirmer from '../components/AConfirmer.astro';
+import { SITE } from '../data/site';
+---
+<PageTexte title="Mentions légales | Chez Lam, Montmorency" description="Mentions légales du site de Chez Lam, traiteur asiatique au 85 rue des Chesneaux à Montmorency : éditeur, hébergeur, propriété intellectuelle." h1="Mentions légales">
+  <h2>Éditeur du site</h2>
+  <p>{SITE.societe}, entreprise unipersonnelle à responsabilité limitée créée en {SITE.creation}.<br />
+  Siège : {SITE.adresse.rue}, {SITE.adresse.cp} {SITE.adresse.ville}<br />
+  Téléphone : <a href={`tel:${SITE.telLien}`}>{SITE.telAffiche}</a><br />
+  SIRET : <AConfirmer /><br />
+  Capital social : <AConfirmer /><br />
+  Directeur de la publication : <AConfirmer quoi="nom du gérant" /></p>
+
+  <h2>Hébergement</h2>
+  <p>Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis. <a href="https://vercel.com" rel="noopener">vercel.com</a></p>
+
+  <h2>Propriété intellectuelle</h2>
+  <p>Les textes, photographies et éléments graphiques de ce site appartiennent à {SITE.societe}, sauf mention contraire. Les extraits d’avis reproduits proviennent d’avis publics laissés sur Google.</p>
+
+  <h2>Prix et disponibilité</h2>
+  <p>Les plats et prix affichés sont donnés à titre indicatif. La vitrine change selon les jours : seuls les prix affichés en boutique font foi.</p>
+</PageTexte>

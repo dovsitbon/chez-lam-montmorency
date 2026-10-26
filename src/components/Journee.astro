@@ -1,0 +1,35 @@
+---
+// La journée type de 10h à 21h : deux services et la coupure, à l'échelle.
+import { SERVICES, fmtHeure } from '../data/site';
+const [midi, soir] = SERVICES;
+const m = (h: string) => { const [a, b] = h.split(':').map(Number); return a * 60 + b; };
+const debut = 600, fin = 1260;
+const pc = (h: string) => ((m(h) - debut) / (fin - debut)) * 100;
+const heures = [10, 12, 14, 16, 18, 20];
+---
+<figure class="journee">
+  <figcaption class="sr-only">Journée du lundi au samedi : ouvert de {fmtHeure(midi.ouvre)} à {fmtHeure(midi.ferme)}, fermé de {fmtHeure(midi.ferme)} à {fmtHeure(soir.ouvre)}, ouvert de {fmtHeure(soir.ouvre)} à {fmtHeure(soir.ferme)}.</figcaption>
+  <div class="piste" aria-hidden="true">
+    <span class="bloc ouvert" style={`left:${pc(midi.ouvre)}%;width:${pc(midi.ferme) - pc(midi.ouvre)}%`}><b>Midi</b></span>
+    <span class="bloc pause" style={`left:${pc(midi.ferme)}%;width:${pc(soir.ouvre) - pc(midi.ferme)}%`}><b>Coupure</b></span>
+    <span class="bloc ouvert" style={`left:${pc(soir.ouvre)}%;width:${pc(soir.ferme) - pc(soir.ouvre)}%`}><b>Soir</b></span>
+    <span class="maintenant" data-maintenant hidden><i>maintenant</i></span>
+  </div>
+  <div class="regle" aria-hidden="true">
+    {heures.map((h) => <span style={`left:${((h * 60 - debut) / (fin - debut)) * 100}%`}>{h}h</span>)}
+  </div>
+</figure>
+<style>
+  .journee { margin: 0; }
+  .piste { position: relative; height: 4.25rem; background: #fff; border: 2px solid var(--color-encre); border-radius: 4px; }
+  .bloc { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .bloc b { font-weight: 650; font-size: 0.92rem; white-space: nowrap; }
+  .ouvert { background: var(--color-moutarde); color: var(--color-encre); }
+  .pause { background: repeating-linear-gradient(-45deg, #a8432c 0 9px, #933a26 9px 18px); color: #fff; }
+  .maintenant { position: absolute; top: -0.6rem; bottom: -0.6rem; width: 3px; margin-left: -1.5px; background: var(--color-encre); }
+  .maintenant i { position: absolute; top: -1.45rem; left: 50%; transform: translateX(-50%); font-style: normal; font-size: 0.78rem; font-weight: 650; white-space: nowrap; }
+  .regle { position: relative; height: 1.6rem; margin-top: 0.35rem; font-size: 0.82rem; color: var(--color-gris); }
+  .regle span { position: absolute; transform: translateX(-50%); }
+  .regle span:first-child { transform: none; }
+  @media (max-width: 480px) { .bloc b { font-size: 0.78rem; } }
+</style>

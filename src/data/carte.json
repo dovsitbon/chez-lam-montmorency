@@ -1,0 +1,47 @@
+{
+  "_aide": "La carte complète, par rubrique. prix : texte (\"6,50 €\") ou null = [À CONFIRMER]. note : précision courte facultative. Les plats listés sont ceux cités par les clients ; la carte réelle est à compléter.",
+  "rubriques": [
+    {
+      "titre": "Entrées",
+      "plats": [
+        { "nom": "Nems au poulet", "prix": null },
+        { "nom": "Samoussas aux légumes", "prix": null },
+        { "nom": "Raviolis de crevette", "prix": null },
+        { "nom": "Bouchées de crevette", "prix": null }
+      ]
+    },
+    {
+      "titre": "Plats",
+      "plats": [
+        { "nom": "Porc caramélisé", "prix": null },
+        { "nom": "Poulet caramélisé", "prix": null },
+        { "nom": "Poulet citronnelle", "prix": null },
+        { "nom": "Poulet au curry", "prix": null }
+      ]
+    },
+    {
+      "titre": "Bo bun",
+      "plats": [
+        { "nom": "Bo bun", "prix": null, "note": "garniture [À CONFIRMER]" }
+      ]
+    },
+    {
+      "titre": "Riz",
+      "plats": [
+        { "nom": "Riz cantonais", "prix": null }
+      ]
+    },
+    {
+      "titre": "Spécialités",
+      "plats": [
+        { "nom": "Bánh cuốn au porc", "prix": null }
+      ]
+    },
+    {
+      "titre": "Sur commande",
+      "plats": [
+        { "nom": "Bouillon pour fondue chinoise", "prix": null, "note": "délai et quantités [À CONFIRMER]" }
+      ]
+    }
+  ]
+}

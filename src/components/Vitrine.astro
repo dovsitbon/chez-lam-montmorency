@@ -1,0 +1,182 @@
+---
+// La vitrine du jour : un meuble vitrine avec ses barquettes et leurs étiquettes manuscrites.
+// Données : src/data/vitrine.json
+import vitrine from '../data/vitrine.json';
+import AConfirmer from './AConfirmer.astro';
+import { SITE } from '../data/site';
+
+type Plat = {
+  nom: string; prix: string | null; unite: string | null; teinte: string;
+  halal: boolean; coupDeCoeur?: string; enVitrine: boolean; forme: string;
+};
+const plats = (vitrine.plats as Plat[]).filter((p) => p.enVitrine);
+// Caveat n'a pas le « ố » précomposé : on le décompose (ô + accent combinant), que la police sait dessiner.
+const main = (s: string) => s.normalize('NFD').normalize('NFC').replace(/ố/g, 'ố');
+const pieces = { rouleau: 4, triangle: 3, rond: 5 } as Record<string, number>;
+const fmtDate = (d: string) => new Date(d).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+---
+<div class="meuble" data-vitrine>
+  <div class="fronton">
+    <p class="font-titre text-white text-[1.25rem] md:text-[1.4rem]">Cuisiné sur place, rue des Chesneaux</p>
+    <p class="text-[0.9rem] text-[#cfe0e2]">
+      {vitrine.miseAJour ? <>Mise à jour {fmtDate(vitrine.miseAJour)}</> : <>Date de mise à jour <AConfirmer /></>}
+    </p>
+  </div>
+  <div class="vitre">
+    <ul class="etagere" role="list">
+      {plats.map((p, i) => (
+        <li class="case" style={`--teinte:${p.teinte};--penche:${i % 3 === 0 ? -2.5 : i % 3 === 1 ? 1.5 : -1}deg`}>
+          <div class={`barquette forme-${p.forme}`} aria-hidden="true">
+            {p.forme === 'plat'
+              ? <span class="garniture"></span>
+              : <span class="pieces">{Array.from({ length: pieces[p.forme] ?? 3 }).map(() => <i></i>)}</span>}
+          </div>
+          <div class="etiquette">
+            <p class="nom">{main(p.nom)}</p>
+            <p class="prix">
+              {p.prix ? <span>{p.prix}</span> : <><span aria-hidden="true">… €</span> <AConfirmer /><span class="sr-only"> prix</span></>}
+              {p.unite && <span class="unite">{p.unite}</span>}
+            </p>
+            {p.halal && <p class="halal">poulet halal</p>}
+          </div>
+          {p.coupDeCoeur && <p class="avis">« {p.coupDeCoeur} »<span class="sr-only">, extrait d'un avis Google</span></p>}
+        </li>
+      ))}
+      <li class="case">
+        <div class="ardoise">
+          <p class="font-titre text-[1.15rem] leading-tight">Sur commande</p>
+          <p class="mt-1 text-[0.95rem] leading-snug">Bouillon pour fondue chinoise <AConfirmer quoi="délai" /></p>
+          <a href={`tel:${SITE.telLien}`} class="mt-3 inline-flex min-h-11 items-center font-semibold underline underline-offset-4 tabular-nums whitespace-nowrap text-[0.92rem] sm:text-base">{SITE.telAffiche}</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="rebord" aria-hidden="true"></div>
+</div>
+
+<script>
+  // Un seul moment animé sur le site : les étiquettes se posent quand la vitrine arrive à l'écran.
+  const v = document.querySelector<HTMLElement>('[data-vitrine]');
+  if (v && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    v.classList.add('attente');
+    const io = new IntersectionObserver((e) => {
+      if (e[0].isIntersecting) { v.classList.add('posee'); io.disconnect(); }
+    }, { threshold: 0.15 });
+    io.observe(v);
+  }
+</script>
+
+<style>
+  .meuble {
+    background: var(--color-petrole-fonce);
+    border: 2px solid var(--color-encre);
+    border-radius: 6px 6px 3px 3px;
+    padding: 0 0.6rem;
+  }
+  .fronton {
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.25rem 1rem;
+    padding: 0.9rem 0.4rem 0.8rem;
+  }
+  .vitre {
+    position: relative;
+    background: var(--color-vitre);
+    border: 2px solid #0a2f36;
+    border-bottom: 0;
+    padding: 1.4rem 0.7rem 0.6rem;
+    overflow: hidden;
+  }
+  /* Reflet de la vitre, très discret. */
+  .vitre::before {
+    content: ''; position: absolute; inset: -20% auto -20% 58%; width: 18%;
+    background: rgb(255 255 255 / 0.45); transform: skewX(-18deg); pointer-events: none;
+  }
+  .etagere {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 0.8rem;
+  }
+  @media (min-width: 640px) { .etagere { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .etagere { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 1.25rem; } .vitre { padding-inline: 1.4rem; } }
+
+  .case {
+    position: relative;
+    padding: 0.4rem 0 1.6rem;
+    /* La tablette inox sous chaque rangée */
+    background: linear-gradient(var(--color-inox), var(--color-inox)) bottom / 100% 6px no-repeat;
+    margin-bottom: 1.1rem;
+  }
+  .barquette {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: #fff;
+    border: 2px solid #c9cfd0;
+    border-radius: 5px;
+    box-shadow: inset 0 0 0 5px #f1f3f3;
+    padding: 12%;
+  }
+  .garniture {
+    display: block; width: 100%; height: 100%;
+    border-radius: 40% 46% 38% 44% / 52% 48% 52% 48%;
+    background-color: var(--teinte);
+    background-image: radial-gradient(rgb(255 255 255 / 0.22) 1.5px, transparent 2px), radial-gradient(rgb(0 0 0 / 0.12) 1.5px, transparent 2px);
+    background-size: 13px 11px, 17px 15px;
+    background-position: 0 0, 6px 5px;
+  }
+  .pieces { display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 6%; width: 100%; height: 100%; }
+  .pieces i { display: block; background: var(--teinte); }
+  .forme-rouleau .pieces { flex-direction: column; flex-wrap: nowrap; gap: 8%; }
+  .forme-rouleau .pieces i { width: 100%; height: 18%; border-radius: 99px; box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.12); }
+  .forme-triangle .pieces i { width: 30%; aspect-ratio: 1; clip-path: polygon(50% 6%, 96% 92%, 4% 92%); }
+  .forme-rond .pieces i { width: 26%; aspect-ratio: 1; border-radius: 50%; box-shadow: inset 0 0 0 2px rgb(0 0 0 / 0.08), inset 0 -4px 0 rgb(0 0 0 / 0.06); }
+
+  .etiquette {
+    position: relative;
+    z-index: 1;
+    width: 92%;
+    margin: -1.1rem auto 0;
+    padding: 0.45rem 0.6rem 0.5rem;
+    background: var(--color-moutarde-clair);
+    border: 1.5px solid #b8891a;
+    border-radius: 2px;
+    transform: rotate(var(--penche));
+    transform-origin: 50% 0;
+  }
+  /* L'épingle */
+  .etiquette::before {
+    content: ''; position: absolute; top: -5px; left: 50%; width: 10px; height: 10px; margin-left: -5px;
+    border-radius: 50%; background: var(--color-brique); border: 1.5px solid var(--color-encre);
+  }
+  .nom { font-family: var(--font-main); font-weight: 600; font-size: 1.42rem; line-height: 1.05; color: var(--color-encre); }
+  .prix { margin-top: 0.15rem; font-family: var(--font-main); font-weight: 700; font-size: 1.5rem; line-height: 1.1; color: var(--color-brique); display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.15rem 0.4rem; }
+  .prix :global(.a-confirmer) { font-size: 0.72rem; }
+  .unite { font-family: var(--font-texte); font-size: 0.8rem; font-weight: 500; color: var(--color-gris); }
+  .halal { margin-top: 0.2rem; font-size: 0.78rem; font-weight: 650; color: var(--color-petrole); }
+  .avis { margin-top: 0.55rem; font-size: 0.86rem; line-height: 1.3; color: var(--color-petrole-fonce); font-style: italic; }
+  @media (min-width: 1024px) { .nom { font-size: 1.55rem; } }
+
+  .ardoise {
+    height: 100%; min-height: 9rem;
+    display: flex; flex-direction: column; justify-content: center;
+    background: var(--color-petrole); color: #fff;
+    border: 2px solid var(--color-encre); border-radius: 4px;
+    padding: 1rem;
+  }
+  .rebord {
+    height: 16px;
+    margin: 0 -0.6rem;
+    background: var(--color-inox);
+    border-top: 2px solid #eef1f1;
+    border-bottom: 2px solid #8f9799;
+  }
+
+  :global(.attente) .etiquette { opacity: 0; transform: translateY(-14px) rotate(calc(var(--penche) * -3)); }
+  :global(.posee) .etiquette {
+    opacity: 1; transform: rotate(var(--penche));
+    transition: opacity 0.35s ease-out, transform 0.55s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+  :global(.posee) .case:nth-child(2) .etiquette { transition-delay: 0.05s; }
+  :global(.posee) .case:nth-child(3) .etiquette { transition-delay: 0.1s; }
+  :global(.posee) .case:nth-child(4) .etiquette { transition-delay: 0.15s; }
+  :global(.posee) .case:nth-child(n + 5) .etiquette { transition-delay: 0.2s; }
+</style>

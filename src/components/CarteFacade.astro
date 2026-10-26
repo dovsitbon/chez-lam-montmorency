@@ -1,0 +1,35 @@
+---
+import { SITE } from '../data/site';
+---
+<div class="relative w-full aspect-[4/3] md:aspect-auto md:h-full min-h-[300px] border-2 border-encre rounded-[4px] overflow-hidden bg-vitre" data-carte>
+  <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <rect width="400" height="300" fill="#e3ebea" />
+    <path d="M-20 210 C 80 190, 170 160, 250 150 S 380 120, 430 100" stroke="#fff" stroke-width="20" fill="none" />
+    <path d="M150 -10 C 160 80, 175 180, 160 320" stroke="#fff" stroke-width="10" fill="none" />
+    <path d="M330 -10 L 300 320" stroke="#fff" stroke-width="7" fill="none" />
+    <text x="70" y="200" font-family="Schibsted Grotesk Variable, sans-serif" font-size="13" fill="#4d585e" transform="rotate(-9 70 200)">rue des Chesneaux</text>
+    <g transform="translate(232 150)">
+      <circle r="15" fill="#11505c" /><text y="5" text-anchor="middle" font-family="Young Serif, serif" font-size="13" fill="#fff">85</text>
+    </g>
+  </svg>
+  <p class="absolute left-3 top-3 bg-carrelage px-2.5 py-1 text-[0.88rem] border border-encre">{SITE.adresse.rue}, {SITE.adresse.cp} {SITE.adresse.ville}</p>
+  <div class="absolute left-3 right-3 bottom-3 flex flex-wrap gap-2">
+    <button type="button" class="btn btn-petrole cursor-pointer" data-charger-carte>Afficher la carte Google</button>
+    <a href={SITE.itineraire} class="btn btn-ligne" target="_blank" rel="noopener">Itinéraire</a>
+  </div>
+</div>
+<script>
+  import { SITE } from '../data/site';
+  document.querySelectorAll<HTMLElement>('[data-carte]').forEach((box) => {
+    box.querySelector('[data-charger-carte]')?.addEventListener('click', () => {
+      const f = document.createElement('iframe');
+      f.src = SITE.carte;
+      f.title = 'Carte : Chez Lam, 85 rue des Chesneaux, Montmorency';
+      f.loading = 'lazy';
+      f.referrerPolicy = 'no-referrer-when-downgrade';
+      f.className = 'absolute inset-0 w-full h-full border-0';
+      box.replaceChildren(f);
+      f.focus();
+    });
+  });
+</script>

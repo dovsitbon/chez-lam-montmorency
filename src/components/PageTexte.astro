@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+interface Props { title: string; description: string; h1: string }
+const { title, description, h1 } = Astro.props;
+---
+<Base title={title} description={description}>
+  <section class="carrelage border-b-2 border-encre">
+    <div class="conteneur py-12 md:py-16">
+      <h1 class="text-petrole text-[2.4rem] md:text-[3.4rem]">{h1}</h1>
+    </div>
+  </section>
+  <div class="conteneur py-12 md:py-16">
+    <div class="texte max-w-[68ch]"><slot /></div>
+  </div>
+</Base>
+<style>
+  .texte :global(h2) { font-size: 1.6rem; color: var(--color-petrole); margin: 2.4rem 0 0.7rem; }
+  .texte :global(h2:first-child) { margin-top: 0; }
+  .texte :global(p), .texte :global(ul) { margin-top: 0.7rem; }
+  .texte :global(ul) { padding-left: 1.2rem; list-style: square; }
+  .texte :global(a) { text-decoration: underline; text-underline-offset: 3px; }
+</style>

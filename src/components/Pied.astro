@@ -1,0 +1,28 @@
+---
+import { SITE, SERVICES, fmtHeure } from '../data/site';
+const [midi, soir] = SERVICES;
+---
+<footer class="bg-encre text-[#e9ecea]">
+  <div class="conteneur py-12 md:py-14 grid gap-10 md:grid-cols-[1.3fr_1fr_1fr]">
+    <div>
+      <p class="font-titre text-3xl text-moutarde">Chez Lam</p>
+      <p class="mt-2 max-w-[34ch] text-[0.95rem] text-[#c4cbcc]">Traiteur asiatique familial : cuisine chinoise, vietnamienne et thaïe préparée sur place, à emporter ou dans la petite salle.</p>
+    </div>
+    <address class="not-italic text-[0.97rem] leading-relaxed">
+      <strong class="font-semibold">{SITE.nom}</strong><br />
+      {SITE.adresse.rue}<br />
+      {SITE.adresse.cp} {SITE.adresse.ville}<br />
+      <a href={`tel:${SITE.telLien}`} class="lien inline-flex min-h-11 items-center">{SITE.telAffiche}</a>
+    </address>
+    <div class="text-[0.97rem] leading-relaxed">
+      <p>Du lundi au samedi<br />{fmtHeure(midi.ouvre)}–{fmtHeure(midi.ferme)} et {fmtHeure(soir.ouvre)}–{fmtHeure(soir.ferme)}<br />Dimanche fermé</p>
+      <ul class="mt-4 flex flex-wrap gap-x-5">
+        <li><a href="/mentions-legales/" class="lien inline-flex min-h-11 items-center">Mentions légales</a></li>
+        <li><a href="/confidentialite/" class="lien inline-flex min-h-11 items-center">Confidentialité</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-white/15">
+    <p class="conteneur py-4 text-[0.85rem] text-[#aeb7b8]">{SITE.societe}, rue des Chesneaux depuis {SITE.creation}. Référencé sur montmorency-tourisme.fr.</p>
+  </div>
+</footer>

@@ -1,0 +1,20 @@
+---
+import PageTexte from '../components/PageTexte.astro';
+import { SITE } from '../data/site';
+---
+<PageTexte title="Politique de confidentialité | Chez Lam, Montmorency" description="Politique de confidentialité du site de Chez Lam à Montmorency : aucun cookie, aucun traceur, aucune donnée personnelle collectée par le site." h1="Politique de confidentialité">
+  <h2>Ce que le site collecte</h2>
+  <p>Rien. Ce site n’a ni formulaire, ni compte client, ni outil de mesure d’audience, ni publicité. Il ne dépose aucun cookie : c’est pourquoi aucun bandeau ne vous est demandé.</p>
+
+  <h2>La carte Google Maps</h2>
+  <p>La carte n’est chargée que si vous cliquez sur « Afficher la carte Google ». Google peut alors déposer ses propres cookies, selon sa politique de confidentialité. Le bouton « Itinéraire » ouvre Google Maps dans un nouvel onglet.</p>
+
+  <h2>Les appels téléphoniques</h2>
+  <p>Les boutons « Appeler » ouvrent simplement l’application téléphone de votre appareil. Les informations données lors d’une commande servent uniquement à la préparer.</p>
+
+  <h2>Hébergement</h2>
+  <p>Le site est hébergé par Vercel, qui peut enregistrer des journaux techniques (adresse IP, date de la visite) pour assurer la sécurité du service.</p>
+
+  <h2>Vos droits</h2>
+  <p>Pour toute question sur vos données : {SITE.societe}, {SITE.adresse.rue}, {SITE.adresse.cp} {SITE.adresse.ville}, ou au <a href={`tel:${SITE.telLien}`}>{SITE.telAffiche}</a>. Vous pouvez aussi saisir la CNIL (cnil.fr).</p>
+</PageTexte>

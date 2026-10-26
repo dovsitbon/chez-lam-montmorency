@@ -1,0 +1,107 @@
+{
+  "_aide": "La vitrine du jour. Pour chaque plat : nom, prix (texte, ex. \"6,50 €\" ; null = [À CONFIRMER]), unite (facultatif, ex. \"la part\", \"les 4\" ; null = rien affiché), teinte (couleur de la barquette), halal (true pour le poulet), coupDeCoeur (citation d'avis courte, facultative). Mettre enVitrine à false pour retirer un plat sans l'effacer. forme : dessin de la barquette (plat, rouleau, triangle, rond).",
+  "miseAJour": null,
+  "plats": [
+    {
+      "nom": "Bo bun",
+      "prix": null,
+      "unite": null,
+      "teinte": "#C9B27A",
+      "halal": false,
+      "coupDeCoeur": "un régal et pas cher",
+      "enVitrine": true,
+      "forme": "plat"
+    },
+    {
+      "nom": "Nems au poulet",
+      "prix": null,
+      "unite": null,
+      "teinte": "#C98A3A",
+      "halal": true,
+      "enVitrine": true,
+      "forme": "rouleau"
+    },
+    {
+      "nom": "Samoussas aux légumes",
+      "prix": null,
+      "unite": null,
+      "teinte": "#D4A04A",
+      "halal": false,
+      "coupDeCoeur": "les meilleurs de ma vie",
+      "enVitrine": true,
+      "forme": "triangle"
+    },
+    {
+      "nom": "Raviolis de crevette",
+      "prix": null,
+      "unite": null,
+      "teinte": "#E6DCC8",
+      "halal": false,
+      "enVitrine": true,
+      "forme": "rond"
+    },
+    {
+      "nom": "Bouchées de crevette",
+      "prix": null,
+      "unite": null,
+      "teinte": "#E3CFA8",
+      "halal": false,
+      "enVitrine": true,
+      "forme": "rond"
+    },
+    {
+      "nom": "Porc caramélisé",
+      "prix": null,
+      "unite": null,
+      "teinte": "#7A3B1E",
+      "halal": false,
+      "enVitrine": true,
+      "forme": "plat"
+    },
+    {
+      "nom": "Poulet caramélisé",
+      "prix": null,
+      "unite": null,
+      "teinte": "#9A5226",
+      "halal": true,
+      "enVitrine": true,
+      "forme": "plat"
+    },
+    {
+      "nom": "Poulet citronnelle",
+      "prix": null,
+      "unite": null,
+      "teinte": "#B9A04A",
+      "halal": true,
+      "enVitrine": true,
+      "forme": "plat"
+    },
+    {
+      "nom": "Poulet au curry",
+      "prix": null,
+      "unite": null,
+      "teinte": "#D9A41E",
+      "halal": true,
+      "enVitrine": true,
+      "forme": "plat"
+    },
+    {
+      "nom": "Riz cantonais",
+      "prix": null,
+      "unite": null,
+      "teinte": "#E8D49A",
+      "halal": false,
+      "enVitrine": true,
+      "forme": "plat"
+    },
+    {
+      "nom": "Bánh cuốn au porc",
+      "prix": null,
+      "unite": null,
+      "teinte": "#EDE6D6",
+      "halal": false,
+      "enVitrine": true,
+      "forme": "plat"
+    }
+  ]
+}

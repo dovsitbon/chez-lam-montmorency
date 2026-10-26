@@ -1,0 +1,46 @@
+---
+// Plaque horaires du jour : statut calculé en JS (Base.astro) + les deux services et la coupure.
+import { SERVICES, fmtHeure } from '../data/site';
+const [midi, soir] = SERVICES;
+---
+<div data-statut data-etat="inconnu" class="plaque bg-petrole text-white border-2 border-encre rounded-[6px] p-5 md:p-6">
+  <div class="flex items-start gap-3" aria-live="polite">
+    <span class="lampe mt-1.5" aria-hidden="true"></span>
+    <p>
+      <span data-statut-titre class="block font-titre text-[1.45rem] leading-tight">Lundi au samedi, midi et soir</span>
+      <span data-statut-detail class="block text-[0.95rem] text-[#cfe0e2] mt-1">Commandes par téléphone pendant les services.</span>
+    </p>
+  </div>
+  <ol class="mt-5 text-[1rem]">
+    <li data-service="midi" class="service">
+      <span class="font-semibold">Midi</span>
+      <span class="tabular-nums">{fmtHeure(midi.ouvre)} – {fmtHeure(midi.ferme)}</span>
+    </li>
+    <li class="coupure">
+      <span>Coupure, fermé</span>
+      <span class="tabular-nums">{fmtHeure(midi.ferme)} – {fmtHeure(soir.ouvre)}</span>
+    </li>
+    <li data-service="soir" class="service">
+      <span class="font-semibold">Soir</span>
+      <span class="tabular-nums">{fmtHeure(soir.ouvre)} – {fmtHeure(soir.ferme)}</span>
+    </li>
+  </ol>
+  <p class="mt-4 text-[0.92rem] text-[#cfe0e2]">Du lundi au samedi. Dimanche fermé.</p>
+</div>
+<style>
+  .lampe { width: 0.85rem; height: 0.85rem; border-radius: 50%; background: #8fb0b5; flex: none; }
+  [data-etat='ouvert'] .lampe { background: var(--color-moutarde); box-shadow: 0 0 0 4px rgb(217 164 30 / 0.3); }
+  [data-etat='coupure'] .lampe, [data-etat='ferme'] .lampe { background: #e3735a; }
+  .service, .coupure { display: flex; justify-content: space-between; gap: 1rem; padding: 0.6rem 0.75rem; }
+  .service { background: rgb(255 255 255 / 0.08); border-radius: 3px; }
+  .service[aria-current] { background: var(--color-moutarde); color: var(--color-encre); }
+  .coupure {
+    margin-block: 0.35rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #fff;
+    border-radius: 3px;
+    background: repeating-linear-gradient(-45deg, #a8432c 0 9px, #933a26 9px 18px);
+  }
+  [data-etat='coupure'] .coupure { outline: 2px solid var(--color-moutarde); outline-offset: 2px; }
+</style>
